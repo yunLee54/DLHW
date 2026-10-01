@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <title>나의 첫번째 영어 학습 앱</title>
+    <meta charset="UTF-8">
+    <title>나의 첫 영어 학습 앱</title>
 
     <!-- CSS: Change how the app looks -->
     <style>
@@ -16,7 +17,7 @@
             font-size: 20px;
             padding: 12px;
             margin: 5px;
-            background-color: green;
+            background-color: lightgreen; /* 버튼 색상: 여기를 바꾸면 색이 달라져요 */
         }
     </style>
 </head>
@@ -25,20 +26,20 @@
 
     <!-- HTML: Change what learners see -->
 
-    <h1>Vocabulary Quiz</h1>
+    <h1>나의 첫 영어 학습 앱</h1>
 
-    <p>What does "Avoid" mean?</p>
+    <p>What does "avoid" mean?</p>
 
     <button onclick="checkAnswer('participate')">
-        Avoid
+        To join in
     </button>
 
     <button onclick="checkAnswer('avoid')">
-        Participate in
+        To stay away from
     </button>
 
     <button onclick="checkAnswer('watch')">
-        Watch
+        To look at
     </button>
 
     <h3 id="feedback"></h3>
@@ -50,14 +51,14 @@
 
         function checkAnswer(answer) {
 
-            if (answer === "participate") {
+            if (answer === "avoid") {
                 document.getElementById("feedback").innerText =
                     "Correct! Well done!";
             }
 
             else {
                 document.getElementById("feedback").innerText =
-                    "Incorrect. The answer is Participate in.";
+                    "Incorrect. The answer is To stay away from.";
             }
 
         }
