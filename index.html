@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>나의 첫 영어 학습 앱</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #1a1a1a;
+            --btn: #90ee90;
+            --btn-fg: #1a1a1a;
+            --next: #add8e6;
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) { --bg: #1e1e1e; --fg: #f0f0f0; }
+        }
+        :root[data-theme="dark"] { --bg: #1e1e1e; --fg: #f0f0f0; }
+
+        html, body { height: 100%; margin: 0; }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: var(--bg);
+            color: var(--fg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #quizBox { width: 90%; max-width: 500px; padding: 30px; }
+
+        button {
+            font-size: 20px;
+            padding: 12px;
+            margin: 5px;
+            background-color: var(--btn);
+            color: var(--btn-fg);
+            border: 1px solid #888;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:disabled { opacity: 0.6; cursor: default; }
+
+        .answerBtn { display: block; width: 100%; box-sizing: border-box; }
+        #feedback { min-height: 30px; }
+        #nextBtn { display: none; background-color: var(--next); }
+    </style>
+</head>
+
+<body>
+    <div id="quizBox">
+        <h1>Vocabulary Quiz</h1>
+        <p id="progress"></p>
+        <p id="question" style="font-size: 22px;"></p>
+        <div id="choices"></div>
+        <h3 id="feedback"></h3>
+        <button id="nextBtn" onclick="nextQuestion()">다음 문제</button>
+    </div>
+
+    <script>
+        var questions = [
+            { word: "Avoid", choices: ["Stay away from", "Take part in", "Look at", "Give back", "Make better"], answer: "Stay away from" },
+            { word: "Participate in", choices: ["Stay away from", "Take part in", "Keep safe", "Buy", "Forget"], answer: "Take part in" },
+            { word: "Borrow", choices: ["Give back", "Take and use for a short time", "Buy", "Break", "Forget"], answer: "Take and use for a short time" },
+            { word: "Protect", choices: ["Keep safe", "Break", "Forget", "Make worse", "Look at"], answer: "Keep safe" },
+            { word: "Improve", choices: ["Make worse", "Make better", "Make smaller", "Give back", "Stay away from"], answer: "Make better" }
+        ];
+
+        // 보기 순서를 섞는 함수 (정답 위치가 매번 달라져요)
+        function shuffle(arr) {
+            var a = arr.slice();
+            for (var i = a.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = a[i]; a[i] = a[j]; a[j] = t;
+            }
+            return a;
+        }
+
+        var current = 0;
+        var score = 0;
+
+        function showQuestion() {
+            var q = questions[current];
+            document.getElementById("progress").innerText = "문제 " + (current + 1) + " / " + questions.length;
+            document.getElementById("question").innerText = 'What does "' + q.word + '" mean?';
+            document.getElementById("feedback").innerText = "";
+            document.getElementById("nextBtn").style.display = "none";
+
+            var choicesDiv = document.getElementById("choices");
+            choicesDiv.innerHTML = "";
+            var shuffled = shuffle(q.choices);
+            for (var i = 0; i < shuffled.length; i++) {
+                var btn = document.createElement("button");
+                btn.className = "answerBtn";
+                btn.innerText = shuffled[i];
+                btn.setAttribute("data-choice", shuffled[i]);
+                btn.onclick = function () { checkAnswer(this.getAttribute("data-choice")); };
+                choicesDiv.appendChild(btn);
+            }
+        }
+
+        function checkAnswer(answer) {
+            var q = questions[current];
+            var buttons = document.querySelectorAll(".answerBtn");
+            for (var i = 0; i < buttons.length; i++) { buttons[i].disabled = true; }
+
+            if (answer === q.answer) {
+                score++;
+                document.getElementById("feedback").innerText = "잘했어, 정답이야!";
+            } else {
+                document.getElementById("feedback").innerText = "틀렸어, 답은 " + q.answer + "야.";
+            }
+
+            var nextBtn = document.getElementById("nextBtn");
+            nextBtn.style.display = "inline-block";
+            nextBtn.innerText = (current === questions.length - 1) ? "결과 보기" : "다음 문제";
+        }
+
+        function nextQuestion() {
+            current++;
+            if (current < questions.length) { showQuestion(); } else { showResult(); }
+        }
+
+        function showResult() {
+            document.getElementById("progress").innerText = "";
+            document.getElementById("question").innerText =
+                "퀴즈 끝! " + questions.length + "문제 중 " + score + "문제를 맞혔어요.";
+            document.getElementById("choices").innerHTML = "";
+            document.getElementById("feedback").innerText = "";
+            var nextBtn = document.getElementById("nextBtn");
+            nextBtn.innerText = "다시 하기";
+            nextBtn.onclick = restart;
+        }
+
+        function restart() {
+            current = 0;
+            score = 0;
+            var nextBtn = document.getElementById("nextBtn");
+            nextBtn.onclick = nextQuestion;
+            showQuestion();
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>
